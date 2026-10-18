@@ -10,9 +10,24 @@ The NodeJS DocumentService listens to 3000 port
 3. kubectl apply -f storage.yaml
    kubectl apply -f deployment.yaml
 
-4. Run Following commands to copy the files to the mounted storage in kubernetes:
-Currently mac folder does not directly gets mounted to kubernetes because of some Docker VM overlay issue. We are not fighting that for now.
+4. Start the cross-platform file watcher after the deployment is ready:
 
-kubectl cp /Users/playmaker/mydocs/one.pdf default/$(kubectl get pod -l app=docapp -o jsonpath='{.items[0].metadata.name}'):/mnt/documents/one.pdf
+   ```sh
+   node watch-documents.js "/path/to/your/documents"
+   ```
+
+   For macOS, for example:
+
+   ```sh
+   node watch-documents.js "/Users/myuser/mydocuments"
+   ```
+
+   For Windows PowerShell, for example:
+
+   ```powershell
+   node watch-documents.js "C:\Users\myuser\Documents"
+   ```
+
+   If no folder argument is supplied, the watcher uses `hostPath.path` from `storage.yaml`. It polls every two seconds, copies new and changed files (including files in subdirectories), and overwrites matching files in `/mnt/documents`. It leaves files in Kubernetes untouched when they are deleted locally. Keep it running while you want changes to sync; press Ctrl+C to stop it.
 
 5. localhost:3002
