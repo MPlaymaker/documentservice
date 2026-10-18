@@ -30,4 +30,7 @@ The NodeJS DocumentService listens to 3000 port
 
    If no folder argument is supplied, the watcher uses `hostPath.path` from `storage.yaml`. It polls every two seconds, copies new and changed files (including files in subdirectories), and overwrites matching files in `/mnt/documents`. It leaves files in Kubernetes untouched when they are deleted locally. Keep it running while you want changes to sync; press Ctrl+C to stop it.
 
-5. localhost:3002
+5. Forward the port so that 3000 inside the kubernetes cluster is reachable:
+   kubectl port-forward svc/documentservice 3002:3000
+   
+6. localhost:3002
