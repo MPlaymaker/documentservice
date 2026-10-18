@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docdeployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docapp
+  template:
+    metadata:
+      labels:
+        app: docapp
+    spec:
+      containers:
+        - name: doccontainer
+          image: documentservice:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: pdf-volume
+              mountPath: /mnt/documents
+      volumes:
+        - name: pdf-volume
+          persistentVolumeClaim:
+            claimName: pdf-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: documentservice
+spec:
+  type: NodePort
+  selector:
+    app: docapp
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 30080
